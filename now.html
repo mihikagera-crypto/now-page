@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Now — snapshot of me</title>
+  <style>
+    :root{
+      --bg:#0f1724;--card:#0b1220;--muted:#9aa4b2;--accent:#7c5cff;--glass:rgba(255,255,255,0.04);
+      --max:820px; --radius:14px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;}
+    body{
+      margin:0; background:linear-gradient(180deg,#071025 0%, #071126 60%); color:#e6eef8; display:flex; align-items:center; justify-content:center; padding:28px;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+    .wrap{width:100%; max-width:var(--max);}
+    header{display:flex; align-items:center; gap:14px; margin-bottom:18px}
+    .avatar{width:68px; height:68px; border-radius:12px; background:linear-gradient(135deg,var(--accent),#ff7ab6); display:flex;align-items:center;justify-content:center;font-weight:700; font-size:26px;}
+    h1{margin:0; font-size:20px}
+    p.lead{margin:0; color:var(--muted); font-size:13px}
+
+    .grid{display:grid; grid-template-columns:1fr; gap:14px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:var(--radius); padding:16px; box-shadow:0 6px 18px rgba(2,6,23,0.6); border:1px solid rgba(255,255,255,0.03)}
+    .section-title{display:flex; align-items:center; justify-content:space-between; gap:10px}
+    .small{font-size:13px; color:var(--muted)}
+
+    .content-row{display:flex; gap:12px; align-items:center}
+    .icon{font-size:22px}
+    .big-text{font-size:16px; font-weight:600}
+    .muted{color:var(--muted); font-size:13px}
+
+    .controls{display:flex; gap:8px}
+    button{background:var(--glass); border:1px solid rgba(255,255,255,0.04); color:inherit; padding:8px 12px; border-radius:10px; cursor:pointer}
+    button.primary{background:linear-gradient(90deg,var(--accent),#ff7ab6); color:#071126; border:none}
+    input, textarea, select{width:100%; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:inherit}
+    textarea{min-height:70px}
+
+    .row{display:flex; gap:12px}
+    .col{flex:1}
+    .meta{display:flex; gap:8px; align-items:center}
+    .time{color:var(--muted); font-size:12px}
+
+    .preview-img{width:90px;height:90px;border-radius:10px;object-fit:cover;border:1px solid rgba(255,255,255,0.04)}
+    footer{margin-top:12px; color:var(--muted); font-size:13px; text-align:center}
+
+    @media (min-width:720px){ .grid{grid-template-columns:1fr 320px} }
+    .spotify-embed{width:100%; height:80px; border-radius:10px; overflow:hidden}
+
+    .mood-list{display:flex; gap:8px}
+    .mood{padding:8px 10px; border-radius:10px; background:rgba(255,255,255,0.02); cursor:pointer}
+
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <div class="avatar" id="avatar">MG</div>
+      <div>
+        <h1 id="title">Now — Mihika's snapshot</h1>
+        <p class="lead">A tiny living diary of what I'm into right now. Click edit to update.</p>
+      </div>
+      <div style="margin-left:auto" class="controls">
+        <button id="editBtn">Edit</button>
+        <button id="saveBtn" class="primary hidden">Save</button>
+      </div>
+    </header>
+
+    <section class="grid">
+      <div>
+        <div class="card">
+          <div class="section-title">
+            <div>
+              <div class="small">🎧 Listening to</div>
+              <div class="big-text" id="listening">Nothing yet — open edit to add a vibe.</div>
+            </div>
+            <div class="time" id="updated">—</div>
+          </div>
+          <div style="height:12px"></div>
+          <div id="spotifyArea" class="spotify-embed hidden"></div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <div class="section-title">
+            <div>
+              <div class="small">📖 Reading</div>
+              <div class="big-text" id="reading">—</div>
+            </div>
+            <div class="small" id="readingAuthor"></div>
+          </div>
+          <div style="height:12px"></div>
+          <div class="muted" id="notes">Add a short note about what you like in it.</div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <div class="section-title">
+            <div>
+              <div class="small">📺 Watching</div>
+              <div class="big-text" id="watching">—</div>
+            </div>
+            <div class="small" id="watchingPlatform"></div>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <div class="section-title">
+            <div>
+              <div class="small">✨ Current Obsession</div>
+              <div class="big-text" id="obsession">—</div>
+            </div>
+          </div>
+          <div style="height:12px"></div>
+          <div class="muted" id="obsessionNote">Could be a snack, a trend, or a small ritual.</div>
+        </div>
+
+      </div>
+
+      <aside>
+        <div class="card">
+          <div class="section-title"><div><div class="small">📍 Where I am</div><div class="big-text" id="location">—</div></div></div>
+          <div style="height:12px"></div>
+          <div class="row">
+            <div class="col">
+              <div class="small">Mood</div>
+              <div class="mood-list" id="moodList">
+                <!-- mood chips -->
+              </div>
+            </div>
+            <div style="width:12px"></div>
+            <div style="width:100px; text-align:center">
+              <div class="small">Snapshot</div>
+              <img src="" id="snapshot" class="preview-img" alt="snapshot" />
+            </div>
+          </div>
+          <div style="height:12px"></div>
+          <div class="small">Quote / Line of the week</div>
+          <div id="quoteLine" style="margin-top:8px">—</div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <div class="small">Meta</div>
+          <div style="height:8px"></div>
+          <div class="muted">Last saved: <span id="metaSaved">never</span></div>
+          <div style="height:8px"></div>
+          <div class="muted">Public: <span id="isPublic">no</span></div>
+        </div>
+
+      </aside>
+    </section>
+
+    <footer>Made with ✨ — edit and save to keep it local (uses your browser storage).</footer>
+
+    <!-- EDIT PANEL (hidden by default) -->
+    <div id="editPanel" class="card hidden" style="margin-top:16px">
+      <h3 style="margin-top:0">Edit "Now"</h3>
+      <div class="row">
+        <div class="col">
+          <label class="small">Title</label>
+          <input id="inpTitle" placeholder="Now — Your snapshot" />
+        </div>
+        <div style="width:120px">
+          <label class="small">Initials</label>
+          <input id="inpInitials" maxlength="3" />
+        </div>
+      </div>
+
+      <div style="height:10px"></div>
+
+      <label class="small">Listening (text)</label>
+      <input id="inpListening" placeholder="Song — Artist" />
+      <div style="height:10px"></div>
+      <label class="small">Spotify embed (share link)</label>
+      <input id="inpSpotify" placeholder="https://open.spotify.com/track/... or playlist link" />
+
+      <div style="height:10px"></div>
+      <label class="small">Reading (title)</label>
+      <input id="inpReading" placeholder="Book / Article title" />
+      <label class="small">Reading author / notes</label>
+      <input id="inpReadingAuthor" placeholder="Author or short note" />
+      <label class="small">Reading notes</label>
+      <textarea id="inpNotes" placeholder="Why you like it..."></textarea>
+
+      <div style="height:10px"></div>
+      <label class="small">Watching</label>
+      <input id="inpWatching" placeholder="Show / Movie / Channel" />
+      <input id="inpWatchingPlatform" placeholder="Netflix / YouTube / etc." />
+
+      <div style="height:10px"></div>
+      <label class="small">Current obsession</label>
+      <input id="inpObsession" placeholder="e.g. Matcha latte" />
+      <input id="inpObsessionNote" placeholder="Short note" />
+
+      <div style="height:10px"></div>
+      <label class="small">Location / Status</label>
+      <input id="inpLocation" placeholder="e.g. Home — studying" />
+
+      <div style="height:10px"></div>
+      <label class="small">Mood (choose one)</label>
+      <select id="inpMood">
+        <option value="chill">chill 😌</option>
+        <option value="hype">hype 🔥</option>
+        <option value="cozy">cozy ☕</option>
+        <option value="anxious">anxious 😬</option>
+        <option value="creative">creative ✨</option>
+      </select>
+
+      <div style="height:10px"></div>
+      <label class="small">Quote / line</label>
+      <input id="inpQuote" placeholder="a line that matters" />
+
+      <div style="height:10px"></div>
+      <label class="small">Snapshot image (optional)</label>
+      <input id="inpImage" type="file" accept="image/*" />
+
+      <div style="height:10px"></div>
+      <label class="small">Public?</label>
+      <select id="inpPublic"><option value="no">No (local)</option><option value="yes">Yes (you'll need to host)</option></select>
+
+      <div style="height:12px"></div>
+      <div style="display:flex; gap:8px; justify-content:flex-end">
+        <button id="cancelEdit">Cancel</button>
+        <button id="doSave" class="primary">Save locally</button>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const stateKeys = 'now_page_v1';
+    const getEl = id=>document.getElementById(id);
+
+    const defaults = {
+      title: "Now — Your snapshot",
+      initials: "MG",
+      listening: "",
+      spotify: "",
+      reading: "",
+      readingAuthor: "",
+      notes: "",
+      watching: "",
+      watchingPlatform: "",
+      obsession: "",
+      obsessionNote: "",
+      location: "",
+      mood: "chill",
+      quote: "",
+      image: "",
+      savedAt: null,
+      isPublic: 'no'
+    }
+
+    function load(){
+      const raw = localStorage.getItem(stateKeys);
+      let data = raw? JSON.parse(raw): defaults;
+      // merge defaults
+      data = Object.assign({}, defaults, data);
+      apply(data);
+    }
+
+    function apply(data){
+      getEl('title').textContent = data.title || defaults.title;
+      getEl('avatar').textContent = (data.initials||defaults.initials).toUpperCase();
+      getEl('listening').textContent = data.listening || '—';
+      getEl('reading').textContent = data.reading || '—';
+      getEl('readingAuthor').textContent = data.readingAuthor || '';
+      getEl('notes').textContent = data.notes || '';
+      getEl('watching').textContent = data.watching || '—';
+      getEl('watchingPlatform').textContent = data.watchingPlatform || '';
+      getEl('obsession').textContent = data.obsession || '—';
+      getEl('obsessionNote').textContent = data.obsessionNote || '';
+      getEl('location').textContent = data.location || '—';
+      getEl('quoteLine').textContent = data.quote || '—';
+      getEl('metaSaved').textContent = data.savedAt? new Date(data.savedAt).toLocaleString() : 'never';
+      getEl('isPublic').textContent = data.isPublic || 'no';
+      getEl('updated').textContent = data.savedAt? `saved ${timeAgo(new Date(data.savedAt))}` : 'not saved';
+      // image
+      const snap = getEl('snapshot');
+      if(data.image){ snap.src = data.image; snap.style.display='block'; } else { snap.src=''; snap.style.display='none'; }
+
+      // spotify embed
+      if(data.spotify){
+        const spotifyArea = getEl('spotifyArea');
+        spotifyArea.innerHTML = makeSpotifyEmbed(data.spotify);
+        spotifyArea.classList.remove('hidden');
+      } else {
+        getEl('spotifyArea').innerHTML=''; getEl('spotifyArea').classList.add('hidden');
+      }
+
+      // mood chips
+      const moodList = getEl('moodList'); moodList.innerHTML='';
+      const moods = {chill:'😌 Chill', hype:'🔥 Hype', cozy:'☕ Cozy', anxious:'😬 Anxious', creative:'✨ Creative'};
+      Object.entries(moods).forEach(([k,v])=>{
+        const el=document.createElement('div'); el.className='mood'; el.textContent=v; if(k===data.mood) el.style.border='1px solid rgba(255,255,255,0.08)';
+        el.onclick=()=>{ document.getElementById('inpMood').value=k; }; moodList.appendChild(el);
+      });
+
+    }
+
+    function makeSpotifyEmbed(url){
+      try{
+        const u = new URL(url);
+        // support /track/ or /playlist/ or /album/
+        const parts = u.pathname.split('/').filter(Boolean);
+        const id = parts[1] || parts[0];
+        const type = parts[0];
+        if(!id) return '';
+        return `<iframe src="https://open.spotify.com/embed/${type}/${id}" width="100%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
+      }catch(e){ return '' }
+    }
+
+    function timeAgo(d){
+      const now = new Date(); const diff = Math.floor((now-d)/1000);
+      if(diff<60) return `${diff}s ago`;
+      if(diff<3600) return `${Math.floor(diff/60)}m ago`;
+      if(diff<86400) return `${Math.floor(diff/3600)}h ago`;
+      return `${d.toLocaleDateString()}`;
+    }
+
+    // UI handlers
+    getEl('editBtn').addEventListener('click', ()=>{
+      const p = getEl('editPanel'); p.classList.toggle('hidden'); getEl('editBtn').classList.toggle('hidden'); getEl('saveBtn').classList.toggle('hidden');
+      // populate inputs
+      const raw = localStorage.getItem(stateKeys); let data = raw? JSON.parse(raw): defaults;
+      data = Object.assign({}, defaults, data);
+      getEl('inpTitle').value = data.title; getEl('inpInitials').value = data.initials;
+      getEl('inpListening').value = data.listening; getEl('inpSpotify').value = data.spotify;
+      getEl('inpReading').value = data.reading; getEl('inpReadingAuthor').value = data.readingAuthor; getEl('inpNotes').value=data.notes;
+      getEl('inpWatching').value=data.watching; getEl('inpWatchingPlatform').value=data.watchingPlatform;
+      getEl('inpObsession').value=data.obsession; getEl('inpObsessionNote').value=data.obsessionNote;
+      getEl('inpLocation').value=data.location; getEl('inpMood').value=data.mood; getEl('inpQuote').value=data.quote; getEl('inpPublic').value=data.isPublic;
+    });
+
+    getEl('cancelEdit').addEventListener('click', ()=>{ getEl('editPanel').classList.add('hidden'); getEl('editBtn').classList.remove('hidden'); getEl('saveBtn').classList.add('hidden'); });
+
+    getEl('doSave').addEventListener('click', ()=> saveFromInputs());
+    getEl('saveBtn').addEventListener('click', ()=>{ getEl('editPanel').classList.remove('hidden'); getEl('saveBtn').classList.add('hidden'); getEl('editBtn').classList.remove('hidden'); saveFromInputs(); });
+
+    function saveFromInputs(){
+      const data = {
+        title: getEl('inpTitle').value || defaults.title,
+        initials: getEl('inpInitials').value || defaults.initials,
+        listening: getEl('inpListening').value || '',
+        spotify: getEl('inpSpotify').value || '',
+        reading: getEl('inpReading').value || '',
+        readingAuthor: getEl('inpReadingAuthor').value || '',
+        notes: getEl('inpNotes').value || '',
+        watching: getEl('inpWatching').value || '',
+        watchingPlatform: getEl('inpWatchingPlatform').value || '',
+        obsession: getEl('inpObsession').value || '',
+        obsessionNote: getEl('inpObsessionNote').value || '',
+        location: getEl('inpLocation').value || '',
+        mood: getEl('inpMood').value || defaults.mood,
+        quote: getEl('inpQuote').value || '',
+        isPublic: getEl('inpPublic').value || 'no',
+        savedAt: new Date().toISOString()
+      };
+
+      const fileInput = getEl('inpImage');
+      if(fileInput.files && fileInput.files[0]){
+        const reader = new FileReader();
+        reader.onload = function(e){ data.image = e.target.result; localStorage.setItem(stateKeys, JSON.stringify(data)); apply(data); closeEdit(); }
+        reader.readAsDataURL(fileInput.files[0]);
+      } else {
+        // keep existing image if present
+        const stored = JSON.parse(localStorage.getItem(stateKeys)||'{}');
+        if(stored && stored.image) data.image = stored.image;
+        localStorage.setItem(stateKeys, JSON.stringify(data)); apply(data); closeEdit();
+      }
+    }
+
+    function closeEdit(){ getEl('editPanel').classList.add('hidden'); getEl('editBtn').classList.remove('hidden'); getEl('saveBtn').classList.add('hidden'); }
+
+    // initial load
+    load();
+
+    // allow manual reset for dev
+    // keyboard shortcut: ctrl+shift+r -> reset
+    window.addEventListener('keydown', (e)=>{
+      if(e.ctrlKey && e.shiftKey && e.key.toLowerCase()==='r'){
+        if(confirm('Reset your saved Now page?')){ localStorage.removeItem(stateKeys); location.reload(); }
+      }
+    });
+  </script>
+</body>
+</html>
